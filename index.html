@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pedido Especial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;600&display=swap");
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #ffe6f2 0%, #ffb6c1 100%);
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      .romantic-title {
+        font-family: "Dancing Script", cursive;
+      }
+
+      .heart {
+        position: absolute;
+        font-size: 1.5rem;
+        animation: float-up 4s ease-in infinite;
+        opacity: 0;
+      }
+
+      @keyframes float-up {
+        0% {
+          transform: translateY(0) scale(0.5);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.8;
+        }
+        80% {
+          opacity: 0.6;
+        }
+        100% {
+          transform: translateY(-100vh) scale(1.2) rotate(20deg);
+          opacity: 0;
+        }
+      }
+
+      .progress-container {
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 20px;
+        padding: 5px;
+        box-shadow: 0 0 15px rgba(255, 182, 193, 0.5);
+      }
+
+      .progress-bar {
+        background: linear-gradient(90deg, #ff66b2, #ff1493);
+        border-radius: 15px;
+        height: 30px;
+        transition: width 0.1s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .progress-bar::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.4) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        animation: shimmer 1.5s infinite;
+      }
+
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
+      .polaroid {
+        background-color: #ffffff;
+        padding: 15px 15px 40px 15px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        transform: rotate(-3deg);
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .polaroid:nth-child(even) {
+        transform: rotate(3deg);
+      }
+
+      .polaroid:hover {
+        transform: scale(1.05) rotate(0);
+        z-index: 10;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .photo-placeholder {
+        background-color: #f8f8f8;
+        height: 200px;
+        width: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        border: 1px solid #eee;
+      }
+
+      .polaroid-caption {
+        font-family: "Dancing Script", cursive;
+        text-align: center;
+        font-size: 1.5rem;
+        color: #ff66b2;
+        position: absolute;
+        bottom: 15px;
+        left: 0;
+        right: 0;
+      }
+
+      .story-hint {
+        position: absolute;
+        bottom: -40px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-family: "Dancing Script", cursive;
+        font-size: 1.2rem;
+        color: #ff66b2;
+        opacity: 0.8;
+      }
+
+      .btn-choice {
+        transition: all 0.3s ease;
+      }
+
+      .btn-choice:hover {
+        transform: scale(1.1);
+      }
+
+      .btn-yes:hover {
+        background-color: #4caf50 !important;
+      }
+
+      .btn-no:hover {
+        background-color: #f44336 !important;
+      }
+
+      .btn-arrow {
+        background-color: rgba(255, 255, 255, 0.7);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-arrow:hover {
+        background-color: rgba(255, 255, 255, 0.9);
+        transform: scale(1.1);
+      }
+
+      /* Animação do coração inicial */
+      .intro-heart {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+      }
+
+      .heart-shape {
+        background-color: #ff66b2;
+        display: inline-block;
+        height: 150px;
+        margin: 0 10px;
+        position: relative;
+        top: 0;
+        transform: rotate(-45deg);
+        width: 150px;
+      }
+
+      .heart-shape:before,
+      .heart-shape:after {
+        content: "";
+        background-color: #ff66b2;
+        border-radius: 50%;
+        height: 150px;
+        position: absolute;
+        width: 150px;
+      }
+
+      .heart-shape:before {
+        top: -75px;
+        left: 0;
+      }
+
+      .heart-shape:after {
+        left: 75px;
+        top: 0;
+      }
+
+      @keyframes heartbeat {
+        0% {
+          transform: rotate(-45deg) scale(1);
+        }
+        25% {
+          transform: rotate(-45deg) scale(1.1);
+        }
+        50% {
+          transform: rotate(-45deg) scale(1);
+        }
+        75% {
+          transform: rotate(-45deg) scale(1.2);
+        }
+        100% {
+          transform: rotate(-45deg) scale(1);
+        }
+      }
+
+      .beating {
+        animation: heartbeat 1s infinite;
+      }
+
+      .intro-transition {
+        animation: fadeOut 1s forwards;
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+          visibility: hidden;
+        }
+      }
+
+      .fade-in {
+        animation: fadeIn 1s forwards;
+        opacity: 0;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .story-line {
+        position: absolute;
+        bottom: -25px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #ff66b2, transparent);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Introdução com coração -->
+    <div
+      id="intro"
+      class="min-h-screen flex flex-col items-center justify-center p-6"
+    >
+      <div class="intro-heart">
+        <div class="heart-shape beating"></div>
+      </div>
+      <h1
+        class="romantic-title text-4xl md:text-6xl mt-8 text-pink-800 text-center"
+      >
+        Nosso Amor
+      </h1>
+    </div>
+
+    <!-- Fase 1: Carregando o amor -->
+    <div
+      id="phase1"
+      class="min-h-screen flex flex-col items-center justify-center p-6 hidden"
+    >
+      <h1
+        class="romantic-title text-4xl md:text-6xl mb-8 text-pink-800 text-center"
+      >
+        Carregando Nosso Amor
+      </h1>
+      <p class="mb-6 text-pink-700 text-center">
+        Pressione a tecla ESPAÇO repetidamente para encher a barra de amor!
+      </p>
+
+      <div class="progress-container w-full max-w-lg mb-8">
+        <div id="progressBar" class="progress-bar w-0"></div>
+      </div>
+
+      <p id="progressText" class="text-xl text-pink-700 mb-8">0%</p>
+
+      <div id="hearts-container" class="w-full h-64 relative"></div>
+    </div>
+
+    <!-- Fase 2: Álbum de fotos -->
+    <div
+      id="phase2"
+      class="min-h-screen flex flex-col items-center justify-center p-6 hidden"
+    >
+      <h1
+        class="romantic-title text-4xl md:text-6xl mb-8 text-pink-800 text-center"
+      >
+        Nossa História
+      </h1>
+
+      <div class="relative w-full max-w-2xl">
+        <div id="polaroidContainer" class="flex justify-center">
+          <!-- Polaroids serão adicionados aqui -->
+        </div>
+
+        <div class="flex justify-between w-full mt-12">
+          <button id="prevBtn" class="btn-arrow">❮</button>
+          <button id="nextBtn" class="btn-arrow">❯</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fase 3: Pedido de namoro -->
+    <div
+      id="phase3"
+      class="min-h-screen flex flex-col items-center justify-center p-6 hidden"
+    >
+      <div id="requestContainer">
+        <h1
+          class="romantic-title text-5xl md:text-7xl mb-12 text-pink-800 text-center"
+        >
+          Aceita namorar comigo?
+        </h1>
+
+        <div class="flex justify-center space-x-8 mt-8">
+          <button
+            id="btnYes"
+            class="btn-choice btn-yes bg-pink-500 hover:bg-pink-600 text-white font-bold py-4 px-8 rounded-full text-xl shadow-lg"
+          >
+            Sim ❤️
+          </button>
+          <button
+            id="btnNo"
+            class="btn-choice btn-no bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-4 px-8 rounded-full text-xl shadow-lg"
+          >
+            Não
+          </button>
+        </div>
+      </div>
+
+      <div id="acceptedMessage" class="hidden text-center">
+        <div class="text-8xl mb-8">😍</div>
+        <h2 class="romantic-title text-3xl md:text-5xl mb-8 text-pink-800">
+          Depois de tudo isso, só espero que você saiba o quanto é especial para
+          mim e o quanto quero construir algo lindo ao seu lado.
+        </h2>
+        <div class="text-6xl mt-8">❤️</div>
+      </div>
+    </div>
+
+    <script>
+      // Variáveis globais
+      let progress = 0;
+      let currentPolaroidIndex = 0;
+      const polaroids = [
+        { caption: "Você...", src: "/assets/1.jpg" },
+        { caption: "Me...", src: "/assets/2.jpg" },
+        { caption: "Completa", src: "/assets/3.jpg" },
+        { caption: "Me faz...", src: "/assets/4.jpg" },
+        { caption: "Muito mais...", src: "/assets/5.jpg" },
+        { caption: "Feliz", src: "/assets/6.jpg" },
+        { caption: "O motivo do meu sorriso", src: "/assets/7.jpg" },
+        { caption: "Ser mais feliz", src: "/assets/8.jpg" },
+      ];
+
+      // Elementos DOM
+      const intro = document.getElementById("intro");
+      const phase1 = document.getElementById("phase1");
+      const phase2 = document.getElementById("phase2");
+      const phase3 = document.getElementById("phase3");
+      const progressBar = document.getElementById("progressBar");
+      const progressText = document.getElementById("progressText");
+      const heartsContainer = document.getElementById("hearts-container");
+      const polaroidContainer = document.getElementById("polaroidContainer");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const btnYes = document.getElementById("btnYes");
+      const btnNo = document.getElementById("btnNo");
+      const requestContainer = document.getElementById("requestContainer");
+      const acceptedMessage = document.getElementById("acceptedMessage");
+
+      // Iniciar com a introdução
+      window.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+          intro.classList.add("intro-transition");
+          setTimeout(() => {
+            intro.classList.add("hidden");
+            phase1.classList.remove("hidden");
+            phase1.classList.add("fade-in");
+          }, 1000);
+        }, 3000);
+      });
+
+      // Função para criar corações flutuantes
+      function createHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * 100 + "%";
+        heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+        heart.style.opacity = "0";
+        heartsContainer.appendChild(heart);
+
+        setTimeout(() => {
+          heart.remove();
+        }, 6000);
+      }
+
+      // Função para atualizar a barra de progresso
+      function updateProgressBar() {
+        progressBar.style.width = progress + "%";
+        progressText.textContent = progress + "%";
+
+        if (progress >= 100) {
+          setTimeout(() => {
+            phase1.classList.add("hidden");
+            phase2.classList.remove("hidden");
+            phase2.classList.add("fade-in");
+            showPolaroid(currentPolaroidIndex);
+          }, 1000);
+        }
+      }
+
+      // Função para mostrar um polaroid específico
+      function showPolaroid(index) {
+        polaroidContainer.innerHTML = "";
+
+        const polaroid = document.createElement("div");
+        polaroid.classList.add("polaroid");
+
+        polaroid.innerHTML = `
+                <div class="photo-placeholder">
+                    <img src="${
+                      polaroids[index].src
+                    }" class="max-h-full max-w-full object-cover object-center w-full h-full">
+                </div>
+                <div class="polaroid-caption">${polaroids[index].caption}</div>
+                <div class="story-line"></div>
+                <div class="story-hint">Mova-se pela nossa história</div>
+                <p class="text-sm text-gray-400 text-center mt-4">${
+                  index + 1
+                }/${polaroids.length}</p>
+            `;
+
+        polaroidContainer.appendChild(polaroid);
+      }
+
+      // Função para navegar para o próximo polaroid
+      function nextPolaroid() {
+        currentPolaroidIndex++;
+        if (currentPolaroidIndex >= polaroids.length) {
+          phase2.classList.add("hidden");
+          phase3.classList.remove("hidden");
+          phase3.classList.add("fade-in");
+          return;
+        }
+        showPolaroid(currentPolaroidIndex);
+      }
+
+      // Função para navegar para o polaroid anterior
+      function prevPolaroid() {
+        currentPolaroidIndex--;
+        if (currentPolaroidIndex < 0) {
+          currentPolaroidIndex = 0;
+        }
+        showPolaroid(currentPolaroidIndex);
+      }
+
+      // Event listeners
+      document.addEventListener("keydown", (event) => {
+        if (event.code === "Space" && !phase1.classList.contains("hidden")) {
+          event.preventDefault();
+          if (progress < 100) {
+            progress += 2;
+            if (progress > 100) progress = 100;
+            updateProgressBar();
+            createHeart();
+          }
+        }
+      });
+
+      prevBtn.addEventListener("click", prevPolaroid);
+      nextBtn.addEventListener("click", nextPolaroid);
+
+      btnYes.addEventListener("click", () => {
+        requestContainer.classList.add("hidden");
+        acceptedMessage.classList.remove("hidden");
+        acceptedMessage.classList.add("fade-in");
+
+        // Criar chuva de corações quando aceitar
+        for (let i = 0; i < 30; i++) {
+          setTimeout(() => {
+            createHeart();
+          }, i * 100);
+        }
+      });
+
+      // Fazer o botão "Não" fugir do mouse
+      btnNo.addEventListener("mouseover", () => {
+        const x = Math.random() * (window.innerWidth - 200);
+        const y = Math.random() * (window.innerHeight - 100);
+        btnNo.style.position = "absolute";
+        btnNo.style.left = x + "px";
+        btnNo.style.top = y + "px";
+      });
+
+      // Iniciar com alguns corações
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          createHeart();
+        }, i * 300 + 3000); // Começar após a introdução
+      }
+    </script>
+    <script>
+      (function () {
+        function c() {
+          var b = a.contentDocument || a.contentWindow.document;
+          if (b) {
+            var d = b.createElement("script");
+            d.innerHTML =
+              "window.__CF$cv$params={r:'961b2d12e5a8f632',t:'MTc1MjkzODE0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+            b.getElementsByTagName("head")[0].appendChild(d);
+          }
+        }
+        if (document.body) {
+          var a = document.createElement("iframe");
+          a.height = 1;
+          a.width = 1;
+          a.style.position = "absolute";
+          a.style.top = 0;
+          a.style.left = 0;
+          a.style.border = "none";
+          a.style.visibility = "hidden";
+          document.body.appendChild(a);
+          if ("loading" !== document.readyState) c();
+          else if (window.addEventListener)
+            document.addEventListener("DOMContentLoaded", c);
+          else {
+            var e = document.onreadystatechange || function () {};
+            document.onreadystatechange = function (b) {
+              e(b);
+              "loading" !== document.readyState &&
+                ((document.onreadystatechange = e), c());
+            };
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>
